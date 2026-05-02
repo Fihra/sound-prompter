@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Project Template — p5 sketch</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/p5@2.2.2/lib/p5.min.js"></script>
+    <script src="/sketch.js" defer></script>
+  </head>
+  <body>
+    <h1>AI Project Template — p5 sketch</h1>
+    <p>Results display on the canvas above each widget. <a href="/">HTML widgets →</a></p>
+
+    <div id="sketch-canvas"></div>
+
+    <div class="widget">
+      <h3>Pixabay (image search)</h3>
+      <input id="pix-q" value="frog" />
+      <button onclick="runPixabay()">search</button>
+    </div>
+
+    <div class="widget">
+      <h3>Gemini (chat)</h3>
+      <input id="gem-q" value="say hi" />
+      <button onclick="runGemini()">send</button>
+    </div>
+
+    <div class="widget">
+      <h3>Cloudflare (chat — Llama 4 Scout)</h3>
+      <input id="cf-q" value="say hi" />
+      <button onclick="runCloudflareChat()">send</button>
+    </div>
+
+    <div class="widget">
+      <h3>Cloudflare (text-to-image — Flux 1 Schnell)</h3>
+      <input id="cfimg-q" value="a frog wearing a top hat" />
+      <button onclick="runCloudflareImage()">generate</button>
+    </div>
+
+    <div class="widget">
+      <h3>Cloudflare (img2img — Stable Diffusion 1.5)</h3>
+      <input id="cfedit-q" value="make it watercolor" />
+      <button onclick="runCloudflareImg2Img()">transform last image</button>
+    </div>
+
+    <div class="widget">
+      <h3>ElevenLabs (text-to-speech)</h3>
+      <input id="tts-q" value="Hello there!" />
+      <button onclick="runTts()">speak</button>
+    </div>
+
+    <div class="widget">
+      <h3>ElevenLabs (sound effects)</h3>
+      <input id="sfx-q" value="thunder crash" />
+      <button onclick="runSfx()">generate</button>
+    </div>
+  </body>
+</html>
