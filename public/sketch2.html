@@ -15,51 +15,22 @@
     <div id="sketch-canvas"></div>
 
     <div class="widget">
-      <h3>Pixabay (image search)</h3>
+      <!-- <h3>Pixabay (image search)</h3>
       <input id="pix-q" value="frog" />
       <button onclick="runPixabay()">search</button>
-    </div>
-
-    <div class="widget">
-      <h3>Gemini (chat)</h3>
-      <input id="gem-q" value="say hi" />
-      <button onclick="runGemini()">send</button>
-    </div>
-
-    <div class="widget">
-      <h3>Cloudflare (chat — Llama 4 Scout)</h3>
-      <input id="cf-q" value="say hi" />
-      <button onclick="runCloudflareChat()">send</button>
     </div>
 
     <div class="widget">
       <h3>Cloudflare (text-to-image — Flux 1 Schnell)</h3>
       <input id="cfimg-q" value="a frog wearing a top hat" />
       <button onclick="runCloudflareImage()">generate</button>
-    </div>
-
-    <div class="widget">
-      <h3>Cloudflare (img2img — Stable Diffusion 1.5)</h3>
-      <input id="cfedit-q" value="make it watercolor" />
-      <button onclick="runCloudflareImg2Img()">transform last image</button>
-    </div>
-
-    <div class="widget">
-      <h3>ElevenLabs (text-to-speech)</h3>
-      <input id="tts-q" value="Hello there!" />
-      <button onclick="runTts()">speak</button>
-    </div>
+    </div> -->
 
     <div class="widget">
       <h3>ElevenLabs (sound effects)</h3>
       <input id="sfx-q" value="thunder crash" />
-      <button onclick="runSfx()">generate</button>
+      <button onclick="runSfx(); runPixabay(); runGemini();">generate</button>
     </div>
 
-    <div class="widget">
-      <h3>ElevenLabs (music stem separation)</h3>
-      <input id="music-q" type="file" name="filename"/>
-      <button onclick="runMusicStem()">stem me up</button>
-    </div>
   </body>
 </html>

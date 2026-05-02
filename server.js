@@ -126,6 +126,23 @@ app.post("/api/sfx", async (req, res) => {
   res.send(Buffer.concat(chunks));
 });
 
+app.post("/api/music/stem-separation", async (req, res) => {
+  const { audio_b64, stems } = req.body;
+
+  const audioBuffer = Buffer.from(audio_b64, "base64");
+  const audioBlob = new Blob([audioBuffer], { type: "audio/mpeg"});
+
+  const result = await elevenlabs.audioIsolation.audioIsolation({
+    audio: audioBlob,
+  });
+
+  res.set("Content-Type", "audio/mpeg");
+  const chunks = [];
+  for await (const chunk of result) chunks.push(chunk);
+  res.send(Buffer.concat(chunks));
+
+})
+
 // ---- ElevenLabs: text-to-speech (raw fetch — kept for reference) ----
 // app.post("/api/tts", async (req, res) => {
 //   const voiceId = "hpp4J3VqNfWAUOO0d1Us"; // Bella
