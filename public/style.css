@@ -1,0 +1,30 @@
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 20px;
+  background: #f5f5f5;
+}
+
+h1 { margin-top: 0; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.p5-section, .plain-section {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.widget {
+  border-top: 1px solid #ddd;
+  padding: 12px 0;
+}
+
+.widget h3 { margin: 0 0 8px 0; font-size: 15px; }
+.widget input { padding: 4px 6px; width: 60%; }
+.widget button { padding: 4px 10px; margin-left: 6px; }
+.widget div { margin-top: 8px; min-height: 1em; }
+.widget img { max-width: 100%; height: auto; }

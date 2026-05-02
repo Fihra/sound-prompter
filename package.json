@@ -1,0 +1,16 @@
+{
+  "name": "ai-project-template",
+  "version": "0.0.1",
+  "description": "Starter template with examples of common AI APIs in a p5 sketch and in plain HTML",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.45.0",
+    "@google/genai": "^1.51.0",
+    "express": "^5.1.0"
+  }
+}

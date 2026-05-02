@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Project Template</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js"></script>
+    <script src="sketch.js" defer></script>
+  </head>
+  <body>
+    <h1>AI Project Template</h1>
+    <p>Working examples of every API. The p5 sketch on the left runs all 7 APIs in one canvas. The widgets on the right are plain HTML/JS calling the same endpoints.</p>
+
+    <div class="layout">
+      <section class="p5-section">
+        <h2>p5 sketch</h2>
+        <main></main>
+      </section>
+
+      <section class="plain-section">
+        <h2>Plain HTML widgets</h2>
+
+        <div class="widget">
+          <h3>Pixabay (image search)</h3>
+          <input id="pix-q" placeholder="search term" value="frog" />
+          <button onclick="runPixabay()">search</button>
+          <div id="pix-out"></div>
+        </div>
+
+        <div class="widget">
+          <h3>Gemini (chat)</h3>
+          <input id="gem-q" placeholder="message" value="say hi" />
+          <button onclick="runGemini()">send</button>
+          <div id="gem-out"></div>
+        </div>
+
+        <div class="widget">
+          <h3>Cloudflare (chat — Llama 4 Scout)</h3>
+          <input id="cf-q" placeholder="message" value="say hi" />
+          <button onclick="runCloudflareChat()">send</button>
+          <div id="cf-out"></div>
+        </div>
+
+        <div class="widget">
+          <h3>Cloudflare (text-to-image — Flux 1 Schnell)</h3>
+          <input id="cfimg-q" placeholder="prompt" value="a frog wearing a top hat" />
+          <button onclick="runCloudflareImage()">generate</button>
+          <div id="cfimg-out"></div>
+        </div>
+
+        <div class="widget">
+          <h3>Cloudflare (img2img — Stable Diffusion 1.5)</h3>
+          <input id="cfedit-q" placeholder="how to transform" value="make it watercolor" />
+          <button onclick="runCloudflareImg2Img()">transform last image</button>
+          <div id="cfedit-out"></div>
+        </div>
+
+        <div class="widget">
+          <h3>ElevenLabs (text-to-speech)</h3>
+          <input id="tts-q" placeholder="text to speak" value="Hello there!" />
+          <button onclick="runTts()">speak</button>
+          <div id="tts-out"></div>
+        </div>
+
+        <div class="widget">
+          <h3>ElevenLabs (sound effects)</h3>
+          <input id="sfx-q" placeholder="sfx prompt" value="thunder crash" />
+          <button onclick="runSfx()">generate</button>
+          <div id="sfx-out"></div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      // ---------- plain HTML widgets ----------
+      let lastImageB64 = null;
+
+      async function runPixabay() {
+        const q = document.getElementById('pix-q').value;
+        const r = await fetch(`/api/pixabay?q=${encodeURIComponent(q)}`);
+        const data = await r.json();
+        document.getElementById('pix-out').innerHTML = data.error
+          ? data.error
+          : `<img src="${data.url}" />`;
+      }
+
+      async function runGemini() {
+        const message = document.getElementById('gem-q').value;
+        const r = await fetch('/api/gemini-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        const data = await r.json();
+        document.getElementById('gem-out').textContent = data.error ?? data.text;
+      }
+
+      async function runCloudflareChat() {
+        const message = document.getElementById('cf-q').value;
+        const r = await fetch('/api/cloudflare-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        const data = await r.json();
+        document.getElementById('cf-out').textContent = data.error ?? data.text;
+      }
+
+      async function runCloudflareImage() {
+        const prompt = document.getElementById('cfimg-q').value;
+        const out = document.getElementById('cfimg-out');
+        out.textContent = 'generating...';
+        const r = await fetch('/api/cloudflare-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        if (!r.ok) { out.textContent = await r.text(); return; }
+        const blob = await r.blob();
+        lastImageB64 = await blobToBase64(blob);
+        out.innerHTML = `<img src="${URL.createObjectURL(blob)}" />`;
+      }
+
+      async function runCloudflareImg2Img() {
+        const prompt = document.getElementById('cfedit-q').value;
+        const out = document.getElementById('cfedit-out');
+        if (!lastImageB64) { out.textContent = 'generate an image first'; return; }
+        out.textContent = 'transforming...';
+        const r = await fetch('/api/cloudflare-img2img', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, image_b64: lastImageB64 })
+        });
+        if (!r.ok) { out.textContent = await r.text(); return; }
+        const blob = await r.blob();
+        lastImageB64 = await blobToBase64(blob);
+        out.innerHTML = `<img src="${URL.createObjectURL(blob)}" />`;
+      }
+
+      async function runTts() {
+        const text = document.getElementById('tts-q').value;
+        const r = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        if (!r.ok) { document.getElementById('tts-out').textContent = await r.text(); return; }
+        const blob = await r.blob();
+        new Audio(URL.createObjectURL(blob)).play();
+      }
+
+      async function runSfx() {
+        const prompt = document.getElementById('sfx-q').value;
+        const r = await fetch('/api/sfx', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        if (!r.ok) { document.getElementById('sfx-out').textContent = await r.text(); return; }
+        const blob = await r.blob();
+        new Audio(URL.createObjectURL(blob)).play();
+      }
+
+      function blobToBase64(blob) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result.split(',')[1]);
+          reader.readAsDataURL(blob);
+        });
+      }
+    </script>
+  </body>
+</html>
