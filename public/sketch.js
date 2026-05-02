@@ -8,12 +8,11 @@ let displayText = '';
 let pixInput, gemInput, cfChatInput, cfImgInput, cfEditInput, ttsInput, sfxInput;
 
 function setup() {
-  createCanvas(500, 300);
+  createCanvas(500, 300).parent(document.querySelector('main'));
   textWrap(WORD);
   textSize(14);
 
-  // p5 DOM elements default to document.body — parent them into the section.
-  const section = select('.p5-section');
+  const section = document.querySelector('.p5-section');
 
   // ---- Pixabay ----
   createP('Pixabay (image search)').parent(section).style('margin', '4px 0');
