@@ -1,49 +1,62 @@
 // One p5 sketch demonstrating all 7 APIs.
-// Each button triggers a different endpoint. Output appears on the canvas.
+// Each section mirrors the plain HTML widget: label + input + button.
 
 let displayImg = null;
 let lastImageB64 = null;
 let displayText = '';
-let promptInput;
+
+let pixInput, gemInput, cfChatInput, cfImgInput, cfEditInput, ttsInput, sfxInput;
 
 function setup() {
-  createCanvas(500, 500);
+  createCanvas(500, 400);
   textWrap(WORD);
   textSize(14);
 
-  promptInput = createInput('a frog wearing a top hat');
-  promptInput.size(300);
-
   // ---- Pixabay ----
-  createButton('Pixabay search').mousePressed(async () => {
-    displayText = 'searching pixabay...';
-    const data = await fetch(`/api/pixabay?q=${encodeURIComponent(promptInput.value())}`).then(r => r.json());
+  createP('Pixabay (image search)').style('margin', '4px 0');
+  pixInput = createInput('frog');
+  pixInput.size(200);
+  createButton('search').mousePressed(async () => {
+    displayText = 'searching...';
+    const data = await fetch(`/api/pixabay?q=${encodeURIComponent(pixInput.value())}`).then(r => r.json());
     if (data.error) { displayText = data.error; return; }
     displayImg = await loadImage(data.url);
     displayText = '';
   });
 
   // ---- Gemini chat ----
-  createButton('Gemini chat').mousePressed(async () => {
+  createP('Gemini (chat)').style('margin', '4px 0');
+  gemInput = createInput('say hi');
+  gemInput.size(200);
+  createButton('send').mousePressed(async () => {
     displayText = 'thinking...';
-    const data = await postJson('/api/gemini-chat', { message: promptInput.value() });
+    displayImg = null;
+    const data = await postJson('/api/gemini-chat', { message: gemInput.value() });
     displayText = data.error ?? data.text;
   });
 
   // ---- Cloudflare chat ----
-  createButton('Cloudflare chat').mousePressed(async () => {
+  createP('Cloudflare (chat — Llama 4 Scout)').style('margin', '4px 0');
+  cfChatInput = createInput('say hi');
+  cfChatInput.size(200);
+  createButton('send').mousePressed(async () => {
     displayText = 'thinking...';
-    const data = await postJson('/api/cloudflare-chat', { message: promptInput.value() });
+    displayImg = null;
+    const data = await postJson('/api/cloudflare-chat', { message: cfChatInput.value() });
     displayText = data.error ?? data.text;
   });
 
   // ---- Cloudflare text-to-image ----
-  createButton('Cloudflare generate image').mousePressed(async () => {
+  createP('Cloudflare (text-to-image — Flux 1 Schnell)').style('margin', '4px 0');
+  cfImgInput = createInput('a frog wearing a top hat');
+  cfImgInput.size(200);
+  createButton('generate').mousePressed(async () => {
     displayText = 'generating image...';
+    displayImg = null;
     const r = await fetch('/api/cloudflare-image', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: promptInput.value() })
+      body: JSON.stringify({ prompt: cfImgInput.value() })
     });
     if (!r.ok) { displayText = await r.text(); return; }
     const blob = await r.blob();
@@ -53,13 +66,16 @@ function setup() {
   });
 
   // ---- Cloudflare img2img ----
-  createButton('Cloudflare transform image').mousePressed(async () => {
+  createP('Cloudflare (img2img — Stable Diffusion 1.5)').style('margin', '4px 0');
+  cfEditInput = createInput('make it watercolor');
+  cfEditInput.size(200);
+  createButton('transform last image').mousePressed(async () => {
     if (!lastImageB64) { displayText = 'generate an image first'; return; }
     displayText = 'transforming...';
     const r = await fetch('/api/cloudflare-img2img', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: promptInput.value(), image_b64: lastImageB64 })
+      body: JSON.stringify({ prompt: cfEditInput.value(), image_b64: lastImageB64 })
     });
     if (!r.ok) { displayText = await r.text(); return; }
     const blob = await r.blob();
@@ -69,12 +85,15 @@ function setup() {
   });
 
   // ---- ElevenLabs TTS ----
-  createButton('ElevenLabs speak').mousePressed(async () => {
+  createP('ElevenLabs (text-to-speech)').style('margin', '4px 0');
+  ttsInput = createInput('Hello there!');
+  ttsInput.size(200);
+  createButton('speak').mousePressed(async () => {
     displayText = 'generating speech...';
     const r = await fetch('/api/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: promptInput.value() })
+      body: JSON.stringify({ text: ttsInput.value() })
     });
     if (!r.ok) { displayText = await r.text(); return; }
     const blob = await r.blob();
@@ -83,12 +102,15 @@ function setup() {
   });
 
   // ---- ElevenLabs SFX ----
-  createButton('ElevenLabs sfx').mousePressed(async () => {
+  createP('ElevenLabs (sound effects)').style('margin', '4px 0');
+  sfxInput = createInput('thunder crash');
+  sfxInput.size(200);
+  createButton('generate').mousePressed(async () => {
     displayText = 'generating sfx...';
     const r = await fetch('/api/sfx', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: promptInput.value() })
+      body: JSON.stringify({ prompt: sfxInput.value() })
     });
     if (!r.ok) { displayText = await r.text(); return; }
     const blob = await r.blob();
