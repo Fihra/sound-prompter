@@ -8,15 +8,18 @@ let displayText = '';
 let pixInput, gemInput, cfChatInput, cfImgInput, cfEditInput, ttsInput, sfxInput;
 
 function setup() {
-  createCanvas(500, 400);
+  createCanvas(500, 300);
   textWrap(WORD);
   textSize(14);
 
+  // p5 DOM elements default to document.body — parent them into the section.
+  const section = select('.p5-section');
+
   // ---- Pixabay ----
-  createP('Pixabay (image search)').style('margin', '4px 0');
-  pixInput = createInput('frog');
+  createP('Pixabay (image search)').parent(section).style('margin', '4px 0');
+  pixInput = createInput('frog').parent(section);
   pixInput.size(200);
-  createButton('search').mousePressed(async () => {
+  createButton('search').parent(section).mousePressed(async () => {
     displayText = 'searching...';
     const data = await fetch(`/api/pixabay?q=${encodeURIComponent(pixInput.value())}`).then(r => r.json());
     if (data.error) { displayText = data.error; return; }
@@ -25,10 +28,10 @@ function setup() {
   });
 
   // ---- Gemini chat ----
-  createP('Gemini (chat)').style('margin', '4px 0');
-  gemInput = createInput('say hi');
+  createP('Gemini (chat)').parent(section).style('margin', '4px 0');
+  gemInput = createInput('say hi').parent(section);
   gemInput.size(200);
-  createButton('send').mousePressed(async () => {
+  createButton('send').parent(section).mousePressed(async () => {
     displayText = 'thinking...';
     displayImg = null;
     const data = await postJson('/api/gemini-chat', { message: gemInput.value() });
@@ -36,10 +39,10 @@ function setup() {
   });
 
   // ---- Cloudflare chat ----
-  createP('Cloudflare (chat — Llama 4 Scout)').style('margin', '4px 0');
-  cfChatInput = createInput('say hi');
+  createP('Cloudflare (chat — Llama 4 Scout)').parent(section).style('margin', '4px 0');
+  cfChatInput = createInput('say hi').parent(section);
   cfChatInput.size(200);
-  createButton('send').mousePressed(async () => {
+  createButton('send').parent(section).mousePressed(async () => {
     displayText = 'thinking...';
     displayImg = null;
     const data = await postJson('/api/cloudflare-chat', { message: cfChatInput.value() });
@@ -47,10 +50,10 @@ function setup() {
   });
 
   // ---- Cloudflare text-to-image ----
-  createP('Cloudflare (text-to-image — Flux 1 Schnell)').style('margin', '4px 0');
-  cfImgInput = createInput('a frog wearing a top hat');
+  createP('Cloudflare (text-to-image — Flux 1 Schnell)').parent(section).style('margin', '4px 0');
+  cfImgInput = createInput('a frog wearing a top hat').parent(section);
   cfImgInput.size(200);
-  createButton('generate').mousePressed(async () => {
+  createButton('generate').parent(section).mousePressed(async () => {
     displayText = 'generating image...';
     displayImg = null;
     const r = await fetch('/api/cloudflare-image', {
@@ -66,10 +69,10 @@ function setup() {
   });
 
   // ---- Cloudflare img2img ----
-  createP('Cloudflare (img2img — Stable Diffusion 1.5)').style('margin', '4px 0');
-  cfEditInput = createInput('make it watercolor');
+  createP('Cloudflare (img2img — Stable Diffusion 1.5)').parent(section).style('margin', '4px 0');
+  cfEditInput = createInput('make it watercolor').parent(section);
   cfEditInput.size(200);
-  createButton('transform last image').mousePressed(async () => {
+  createButton('transform last image').parent(section).mousePressed(async () => {
     if (!lastImageB64) { displayText = 'generate an image first'; return; }
     displayText = 'transforming...';
     const r = await fetch('/api/cloudflare-img2img', {
@@ -85,10 +88,10 @@ function setup() {
   });
 
   // ---- ElevenLabs TTS ----
-  createP('ElevenLabs (text-to-speech)').style('margin', '4px 0');
-  ttsInput = createInput('Hello there!');
+  createP('ElevenLabs (text-to-speech)').parent(section).style('margin', '4px 0');
+  ttsInput = createInput('Hello there!').parent(section);
   ttsInput.size(200);
-  createButton('speak').mousePressed(async () => {
+  createButton('speak').parent(section).mousePressed(async () => {
     displayText = 'generating speech...';
     const r = await fetch('/api/tts', {
       method: 'POST',
@@ -102,10 +105,10 @@ function setup() {
   });
 
   // ---- ElevenLabs SFX ----
-  createP('ElevenLabs (sound effects)').style('margin', '4px 0');
-  sfxInput = createInput('thunder crash');
+  createP('ElevenLabs (sound effects)').parent(section).style('margin', '4px 0');
+  sfxInput = createInput('thunder crash').parent(section);
   sfxInput.size(200);
-  createButton('generate').mousePressed(async () => {
+  createButton('generate').parent(section).mousePressed(async () => {
     displayText = 'generating sfx...';
     const r = await fetch('/api/sfx', {
       method: 'POST',
@@ -121,9 +124,9 @@ function setup() {
 
 function draw() {
   background(220);
-  if (displayImg) image(displayImg, 0, 0, 500, 350);
+  if (displayImg) image(displayImg, 0, 0, 500, 250);
   fill(0);
-  text(displayText, 10, 360, 480, 130);
+  text(displayText, 10, 260, 480, 40);
 }
 
 async function postJson(url, body) {
